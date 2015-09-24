@@ -805,7 +805,7 @@ void Block::cleanup(bool _fullCommit)
 			throw;
 		}
 
-		m_state.db().commit(m_currentBlock.number());	// TODO: State API for this?
+		m_state.db().commit(m_currentBlock.number(), m_currentBlock.stateRoot());	// TODO: State API for this?
 
 		if (isChannelVisible<StateTrace>()) // Avoid calling toHex if not needed
 			clog(StateTrace) << "Committed: stateRoot" << m_currentBlock.stateRoot() << "=" << rootHash() << "=" << toHex(asBytes(db().lookup(rootHash())));
