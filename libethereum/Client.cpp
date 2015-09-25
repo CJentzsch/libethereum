@@ -650,6 +650,7 @@ void Client::resyncStateFromChain()
 
 void Client::resetState()
 {
+	m_preMine.sync(bc());
 	Block newPreMine;
 	DEV_READ_GUARDED(x_preMine)
 		newPreMine = m_preMine;
