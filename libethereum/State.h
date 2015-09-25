@@ -292,9 +292,16 @@ AddressHash commit(AccountMap const& _cache, SecureTrieDB<Address, DB>& _state)
 				}
 				else
 					s << i.second.codeHash();
-
-				_state.insert(i.first, &s.out());
-				//std::cout << "insert from address (final at commit): " << i.first << std::endl;
+				try
+				{
+					_state.insert(i.first, &s.out());
+				}
+				catch (Exception const& _e)
+				{
+					_e << errinfo_address(i.first);
+					cwarn << " Failed to commit changes\n" << boost::diagnostic_information(_e);
+					throw;
+				}
 			}
 			ret.insert(i.first);
 		}

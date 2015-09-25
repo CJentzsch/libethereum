@@ -613,9 +613,9 @@ ImportRoute BlockChain::import(VerifiedBlockRef const& _block, OverlayDB const& 
 #endif
 	}
 #if ETH_CATCH
-	catch (BadRoot& ex)
+	catch (DBException& ex)
 	{
-		cwarn << "*** BadRoot error! Trying to import" << _block.info.hash() << "needed root" << ex.root;
+		cwarn << "*** BadRoot error! Trying to import" << _block.info.hash() << boost::diagnostic_information(ex);
 		cwarn << _block.info;
 		// Attempt in import later.
 		BOOST_THROW_EXCEPTION(TransientError());

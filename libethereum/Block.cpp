@@ -586,7 +586,19 @@ u256 Block::enact(VerifiedBlockRef const& _block, BlockChain const& _bc)
 
 	// Commit all cached state changes to the state trie.
 	DEV_TIMED_ABOVE("commit", 500)
-		m_state.commit();
+	{
+		try
+		{
+			m_state.commit();
+		}
+		catch (Exception const& _e)
+		{
+			_e << errinfo_currentNumber(this->info().number()) << errinfo_block(this->blockData());
+			cwarn << " Failed to commit enact block\n Roll back" << boost::diagnostic_information(_e);
+			m_state.db().rollback();
+			throw;
+		}
+	}
 
 	// Hash the state trie and check against the state_root hash in m_currentBlock.
 	if (m_currentBlock.stateRoot() != m_previousBlock.stateRoot() && m_currentBlock.stateRoot() != rootHash())
