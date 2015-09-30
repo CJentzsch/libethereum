@@ -218,7 +218,6 @@ bool Block::sync(BlockChain const& _bc, h256 const& _block, BlockInfo const& _bi
 		// New blocks available, or we've switched to a different branch. All change.
 		// Find most recent state dump and replay what's left.
 		// (Most recent state dump might end up being genesis.)
-cout << "lookup state root of block: " << bi.number() << endl;
 		if (m_state.db().lookup(bi.stateRoot()).empty())	// TODO: API in State for this?
 		{
 			cwarn << "Unable to sync to" << bi.hash() << "; state root" << bi.stateRoot() << "not found in database.";
