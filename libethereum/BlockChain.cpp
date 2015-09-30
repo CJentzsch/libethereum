@@ -1281,7 +1281,7 @@ Block BlockChain::genesisBlock(OverlayDB const& _db) const
 	dev::eth::commit(m_genesisState, ret.mutableState().m_state);		// bit horrible. maybe consider a better way of constructing it?
 	cout <<"initialized? " << (ret.mutableState().db().db() ? 1 : 2) << endl;
 	//cout << "path: " << ret.mutableState().db()
-	ret.mutableState().db().commit(0, r);									// have to use this db() since it's the one that has been altered with the above commit.
+	ret.mutableState().db().commit(0);									// have to use this db() since it's the one that has been altered with the above commit.
 	ret.m_previousBlock = BlockInfo(m_genesisBlock);
 	ret.resetCurrent();
 	return ret;

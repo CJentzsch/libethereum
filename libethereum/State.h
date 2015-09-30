@@ -268,18 +268,11 @@ AddressHash commit(AccountMap const& _cache, SecureTrieDB<Address, DB>& _state)
 				else
 				{
 					SecureTrieDB<h256, DB> storageDB(_state.db(), i.second.baseRoot());
-					storageDB.setStorage(true);
 					for (auto const& j: i.second.storageOverlay())
 						if (j.second)
-						{
 							storageDB.insert(j.first, rlp(j.second));
-							std::cout << "insert from storage: " << j.first << std::endl;
-						}
 						else
-						{
 							storageDB.remove(j.first);
-							std::cout << "remove from storage: " << j.first << std::endl;
-						}
 					assert(storageDB.root());
 					s.append(storageDB.root());
 				}
