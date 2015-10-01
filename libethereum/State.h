@@ -270,9 +270,15 @@ AddressHash commit(AccountMap const& _cache, SecureTrieDB<Address, DB>& _state)
 					SecureTrieDB<h256, DB> storageDB(_state.db(), i.second.baseRoot());
 					for (auto const& j: i.second.storageOverlay())
 						if (j.second)
+						{
+							cwarn << "insert in storage: " << j.first;
 							storageDB.insert(j.first, rlp(j.second));
+						}
 						else
+						{
+							cwarn << "remove in storage: " << j.first;
 							storageDB.remove(j.first);
+						}
 					assert(storageDB.root());
 					s.append(storageDB.root());
 				}
