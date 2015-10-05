@@ -832,21 +832,21 @@ void Block::cleanup(bool _fullCommit)
 
 		m_state.db().commit(m_currentBlock.number());	// TODO: State API for this?
 
-			try
-			{
-				if (m_currentBlock.number() > 318000)
-				{
-					mutableState().m_state.leftOvers();
-				}
-			}
-			catch(Exception _e)
-			{
-				cwarn << "BAD TRIE after: " << boost::diagnostic_information(_e);
-			}
-			catch(...)
-			{
-				cwarn << "BAD TRIE: after";
-			}
+//			try
+//			{
+//				if (m_currentBlock.number() > 318000)
+//				{
+//					mutableState().m_state.leftOvers();
+//				}
+//			}
+//			catch(Exception _e)
+//			{
+//				cwarn << "BAD TRIE after: " << boost::diagnostic_information(_e);
+//			}
+//			catch(...)
+//			{
+//				cwarn << "BAD TRIE: after";
+//			}
 
 
 		if (isChannelVisible<StateTrace>()) // Avoid calling toHex if not needed
