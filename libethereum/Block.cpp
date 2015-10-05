@@ -815,8 +815,39 @@ void Block::cleanup(bool _fullCommit)
 			clog(StateChat) << "Trie corrupt! :-(";
 			throw;
 		}
+//		// check the trie
+//		try
+//		{
+//			if (m_currentBlock.number() > 318000)
+//				mutableState().m_state.leftOvers();
+//		}
+//		catch(Exception _e)
+//		{
+//			cwarn << "BAD TRIE before: " << boost::diagnostic_information(_e);
+//		}
+//		catch(...)
+//		{
+//			cwarn << "BAD TRIE: before";
+//		}
 
 		m_state.db().commit(m_currentBlock.number());	// TODO: State API for this?
+
+			try
+			{
+				if (m_currentBlock.number() > 318000)
+				{
+					mutableState().m_state.leftOvers();
+				}
+			}
+			catch(Exception _e)
+			{
+				cwarn << "BAD TRIE after: " << boost::diagnostic_information(_e);
+			}
+			catch(...)
+			{
+				cwarn << "BAD TRIE: after";
+			}
+
 
 		if (isChannelVisible<StateTrace>()) // Avoid calling toHex if not needed
 			clog(StateTrace) << "Committed: stateRoot" << m_currentBlock.stateRoot() << "=" << rootHash() << "=" << toHex(asBytes(db().lookup(rootHash())));

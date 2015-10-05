@@ -218,7 +218,7 @@ public:
 	/// Resets any uncommitted changes to the cache.
 	void setRoot(h256 const& _root);
 
-private:
+//private:
 	/// Retrieve all information about a given address into the cache.
 	/// If _requireMemory is true, grab the full memory should it be a contract item.
 	/// If _forceCreate is true, then insert a default item into the cache, in the case it doesn't

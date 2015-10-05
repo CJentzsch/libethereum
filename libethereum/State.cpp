@@ -221,7 +221,27 @@ void State::ensureCached(std::unordered_map<Address, Account>& _cache, const Add
 
 void State::commit()
 {
+	cout << "COMMIT IN STATE" << endl;
 	m_touched += dev::eth::commit(m_cache, m_state);
+	try
+	{
+		if (db().m_blockNumber > 322440)
+		{
+			for (auto i: m_touched)
+			{
+				SecureTrieDB<h256, OverlayDB> storageDB(m_state.db(), storageRoot(i));
+				storageDB.leftOvers();
+			}
+		}
+	}
+	catch(Exception _e)
+	{
+		cwarn << "BAD STORGAE TRIE after: " << boost::diagnostic_information(_e);
+	}
+	catch(...)
+	{
+		cwarn << "BAD STORAGE TRIE: after";
+	}
 	m_cache.clear();
 }
 
