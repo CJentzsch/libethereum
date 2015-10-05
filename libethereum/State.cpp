@@ -221,7 +221,7 @@ void State::ensureCached(std::unordered_map<Address, Account>& _cache, const Add
 
 void State::commit()
 {
-	cout << "COMMIT IN STATE" << endl;
+	//cout << "COMMIT IN STATE" << endl;
 	m_touched += dev::eth::commit(m_cache, m_state);
 	try
 	{
