@@ -267,20 +267,30 @@ AddressHash commit(AccountMap const& _cache, SecureTrieDB<Address, DB>& _state)
 				}
 				else
 				{
-					SecureTrieDB<h256, DB> storageDB(_state.db(), i.second.baseRoot());
-					for (auto const& j: i.second.storageOverlay())
-						if (j.second)
-						{
-							cwarn << "insert in storage: " << j.first;
-							storageDB.insert(j.first, rlp(j.second));
-						}
-						else
-						{
-							cwarn << "remove in storage: " << j.first;
-							storageDB.remove(j.first);
-						}
-					assert(storageDB.root());
-					s.append(storageDB.root());
+					try
+					{
+						SecureTrieDB<h256, DB> storageDB(_state.db(), i.second.baseRoot());
+						for (auto const& j: i.second.storageOverlay())
+							if (j.second)
+							{
+								cwarn << "insert in storage: " << j.first;
+								storageDB.insert(j.first, rlp(j.second));
+							}
+							else
+							{
+								cwarn << "remove in storage: " << j.first;
+								storageDB.remove(j.first);
+							}
+
+						assert(storageDB.root());
+						s.append(storageDB.root());
+					}
+					catch (Exception const& _e)
+					{
+						_e << errinfo_address(i.first);
+						cwarn << " Failed to commit changes in storage tree\n" << boost::diagnostic_information(_e);
+						throw;
+					}
 				}
 
 				if (i.second.isFreshCode())
@@ -298,7 +308,7 @@ AddressHash commit(AccountMap const& _cache, SecureTrieDB<Address, DB>& _state)
 				catch (Exception const& _e)
 				{
 					_e << errinfo_address(i.first);
-					cwarn << " Failed to commit changes\n" << boost::diagnostic_information(_e);
+					cwarn << " Failed to commit changes in state tree\n" << boost::diagnostic_information(_e);
 					throw;
 				}
 			}
