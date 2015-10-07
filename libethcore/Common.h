@@ -43,8 +43,8 @@ extern const unsigned c_minorProtocolVersion;
 /// Current database version.
 extern const unsigned c_databaseVersion;
 
-/// State tree pruning.
-extern unsigned c_stateTreePruning;
+///// State tree pruning.
+//extern unsigned c_stateTreePruning;
 
 /// The network id.
 enum class Network

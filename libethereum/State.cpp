@@ -221,12 +221,11 @@ void State::ensureCached(std::unordered_map<Address, Account>& _cache, const Add
 
 void State::commit()
 {
-	//cout << "COMMIT IN STATE" << endl;
 	m_touched += dev::eth::commit(m_cache, m_state);
 	try
 	{
-		if (db().m_blockNumber > 342300)
-		{
+		//if (db().m_blockNumber > 342300)
+		//{
 			for (auto i: m_touched)
 			{
 				if (storageRoot(i) != EmptyTrie)
@@ -237,7 +236,7 @@ void State::commit()
 					cout << "done" << endl;
 				}
 			}
-		}
+		//}
 	}
 	catch(Exception _e)
 	{

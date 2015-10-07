@@ -815,68 +815,8 @@ void Block::cleanup(bool _fullCommit)
 			clog(StateChat) << "Trie corrupt! :-(";
 			throw;
 		}
-//		// check the trie
-//		try
-//		{
-//			if (m_currentBlock.number() > 318000)
-//				mutableState().m_state.leftOvers();
-//		}
-//		catch(Exception _e)
-//		{
-//			cwarn << "BAD TRIE before: " << boost::diagnostic_information(_e);
-//		}
-//		catch(...)
-//		{
-//			cwarn << "BAD TRIE: before";
-//		}
 
 		m_state.db().commit(m_currentBlock.number());	// TODO: State API for this?
-
-//		unsigned tmpBlockNumber = 341500;
-//		try
-//		{
-//			if (m_currentBlock.number() > tmpBlockNumber)
-//			{
-//				cout << "CHECK state trie" << endl;
-//				mutableState().m_state.leftOvers();
-//				cout << "done" << endl;
-//			}
-//		}
-//		catch(Exception _e)
-//		{
-//			cwarn << "BAD TRIE in state: " << boost::diagnostic_information(_e);
-//		}
-//		catch(...)
-//		{
-//			cwarn << "BAD TRIE in state";
-//		}
-
-//		try
-//		{
-//			if (m_currentBlock.number() > tmpBlockNumber)
-//			{
-//				cout << "CHECK storage trie" << endl;
-
-//				for (auto i: mutableState().m_touched)
-//				{
-//					if (mutableState().storageRoot(i) != EmptyTrie)
-//					{
-//						SecureTrieDB<h256, OverlayDB> storageDB(mutableState().m_state.db(), mutableState().storageRoot(i));
-//						storageDB.leftOvers();
-//					}
-//				}
-//				cout << "done" << endl;
-//			}
-//		}
-//		catch(Exception _e)
-//		{
-//			cwarn << "BAD TRIE in storage tree: " << boost::diagnostic_information(_e);
-//		}
-//		catch(...)
-//		{
-//			cwarn << "BAD TRIE in storage tree";
-//		}
-
 
 		if (isChannelVisible<StateTrace>()) // Avoid calling toHex if not needed
 			clog(StateTrace) << "Committed: stateRoot" << m_currentBlock.stateRoot() << "=" << rootHash() << "=" << toHex(asBytes(db().lookup(rootHash())));
