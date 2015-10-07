@@ -224,19 +224,14 @@ void State::commit()
 	m_touched += dev::eth::commit(m_cache, m_state);
 	try
 	{
-		//if (db().m_blockNumber > 342300)
-		//{
-			for (auto i: m_touched)
+		for (auto i: m_touched)
+		{
+			if (storageRoot(i) != EmptyTrie)
 			{
-				if (storageRoot(i) != EmptyTrie)
-				{
-					cout << "CHECK storage trie" << endl;
-					SecureTrieDB<h256, OverlayDB> storageDB(m_state.db(), storageRoot(i));
-					storageDB.leftOvers();
-					cout << "done" << endl;
-				}
+				SecureTrieDB<h256, OverlayDB> storageDB(m_state.db(), storageRoot(i));
+				storageDB.leftOvers();
 			}
-		//}
+		}
 	}
 	catch(Exception _e)
 	{
@@ -244,7 +239,7 @@ void State::commit()
 	}
 	catch(...)
 	{
-		cwarn << "BAD STORAGE TRIE: after";
+		cwarn << "BAD STORAGE TRIE";
 	}
 	m_cache.clear();
 }
