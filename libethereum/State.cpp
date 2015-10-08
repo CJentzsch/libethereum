@@ -222,25 +222,25 @@ void State::ensureCached(std::unordered_map<Address, Account>& _cache, const Add
 void State::commit()
 {
 	m_touched += dev::eth::commit(m_cache, m_state);
-	try
-	{
-		for (auto i: m_touched)
-		{
-			if (storageRoot(i) != EmptyTrie)
-			{
-				SecureTrieDB<h256, OverlayDB> storageDB(m_state.db(), storageRoot(i));
-				storageDB.leftOvers();
-			}
-		}
-	}
-	catch(Exception _e)
-	{
-		cwarn << "BAD STORGAE TRIE after: " << boost::diagnostic_information(_e);
-	}
-	catch(...)
-	{
-		cwarn << "BAD STORAGE TRIE";
-	}
+//	try
+//	{
+//		for (auto i: m_touched)
+//		{
+//			if (storageRoot(i) != EmptyTrie)
+//			{
+//				SecureTrieDB<h256, OverlayDB> storageDB(m_state.db(), storageRoot(i));
+//				storageDB.leftOvers();
+//			}
+//		}
+//	}
+//	catch(Exception _e)
+//	{
+//		cwarn << "BAD STORAGE TRIE after: " << boost::diagnostic_information(_e);
+//	}
+//	catch(...)
+//	{
+//		cwarn << "BAD STORAGE TRIE";
+//	}
 	m_cache.clear();
 }
 

@@ -218,6 +218,11 @@ public:
 	/// Resets any uncommitted changes to the cache.
 	void setRoot(h256 const& _root);
 
+	SecureTrieDB<Address, OverlayDB>& getState() { return m_state; }
+
+	AddressHash& getTouchedAccounts() {return m_touched; }
+
+
 private:
 	/// Retrieve all information about a given address into the cache.
 	/// If _requireMemory is true, grab the full memory should it be a contract item.
