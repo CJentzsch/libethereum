@@ -235,7 +235,7 @@ void State::commit()
 	}
 	catch(Exception _e)
 	{
-		cwarn << "BAD STORGAE TRIE after: " << boost::diagnostic_information(_e);
+		cwarn << "BAD STORAGE TRIE after: " << boost::diagnostic_information(_e);
 	}
 	catch(...)
 	{
