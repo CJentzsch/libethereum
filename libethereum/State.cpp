@@ -110,7 +110,7 @@ OverlayDB State::openDB(std::string const& _basePath, h256 const& _genesisHash, 
 	}
 
 	cnote << "Opened state DB.";
-	return OverlayDB(db);
+	return OverlayDB(db, Defaults::statePruning());
 }
 
 void State::populateFrom(AccountMap const& _map)
