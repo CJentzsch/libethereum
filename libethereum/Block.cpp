@@ -818,6 +818,44 @@ void Block::cleanup(bool _fullCommit)
 
 		m_state.db().commit(m_currentBlock.number());	// TODO: State API for this?
 
+		unsigned tmpBlockNumber = 352860;
+		try
+		{
+			if (m_currentBlock.number() > tmpBlockNumber)
+				mutableState().getState().leftOvers();
+		}
+		catch(Exception _e)
+		{
+			cwarn << "BAD TRIE in state: " << boost::diagnostic_information(_e);
+		}
+		catch(...)
+		{
+			cwarn << "BAD TRIE in state";
+		}
+
+		try
+		{
+			if (m_currentBlock.number() > tmpBlockNumber)
+			{
+				for (auto i: mutableState().getTouchedAccounts())
+				{
+					if (mutableState().storageRoot(i) != EmptyTrie)
+					{
+						SecureTrieDB<h256, OverlayDB> storageDB(mutableState().getState().db(), mutableState().storageRoot(i)); // mutableState().m_state.db()
+						storageDB.leftOvers();
+					}
+				}
+			}
+		}
+		catch(Exception _e)
+		{
+			cwarn << "BAD TRIE in storage tree: " << boost::diagnostic_information(_e);
+		}
+		catch(...)
+		{
+			cwarn << "BAD TRIE in storage tree";
+		}
+
 		if (isChannelVisible<StateTrace>()) // Avoid calling toHex if not needed
 			clog(StateTrace) << "Committed: stateRoot" << m_currentBlock.stateRoot() << "=" << rootHash() << "=" << toHex(asBytes(db().lookup(rootHash())));
 
