@@ -818,10 +818,9 @@ void Block::cleanup(bool _fullCommit)
 
 		m_state.db().commit(m_currentBlock.number());	// TODO: State API for this?
 
-		unsigned tmpBlockNumber = 352860;
 		try
 		{
-			if (m_currentBlock.number() > tmpBlockNumber)
+			if (m_currentBlock.number() % Defaults::statePruning() == 0)
 				mutableState().getState().leftOvers();
 		}
 		catch(Exception _e)
@@ -835,7 +834,7 @@ void Block::cleanup(bool _fullCommit)
 
 		try
 		{
-			if (m_currentBlock.number() > tmpBlockNumber)
+			if (m_currentBlock.number() % Defaults::statePruning() == 0)
 			{
 				for (auto i: mutableState().getTouchedAccounts())
 				{
