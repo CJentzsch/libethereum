@@ -836,7 +836,7 @@ void Block::cleanup(bool _fullCommit)
 		{
 			if (m_currentBlock.number() % Defaults::statePruning() == 0)
 			{
-				for (auto i: mutableState().getTouchedAccounts())
+				for (auto const& i: mutableState().getTouchedAccounts())
 				{
 					if (mutableState().storageRoot(i) != EmptyTrie)
 					{

@@ -222,7 +222,6 @@ public:
 
 	AddressHash& getTouchedAccounts() {return m_touched; }
 
-
 private:
 	/// Retrieve all information about a given address into the cache.
 	/// If _requireMemory is true, grab the full memory should it be a contract item.
