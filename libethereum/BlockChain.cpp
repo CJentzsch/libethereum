@@ -787,11 +787,6 @@ ImportRoute BlockChain::import(VerifiedBlockRef const& _block, OverlayDB const& 
 		exit(-1);
 	}
 
-
-
-
-
-
 #if ETH_PARANOIA || !ETH_TRUE
 	if (isKnown(_block.info.hash()) && !details(_block.info.hash()))
 	{
