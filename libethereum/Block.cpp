@@ -818,7 +818,7 @@ void Block::cleanup(bool _fullCommit)
 
 		m_state.db().commit(m_currentBlock.number());	// TODO: State API for this?
 
-		if (m_currentBlock.number() > 49300)
+		if (m_currentBlock.number() > 493000)
 		{
 			try
 			{
