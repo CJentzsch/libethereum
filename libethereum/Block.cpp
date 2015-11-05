@@ -44,7 +44,6 @@ using namespace dev;
 using namespace dev::eth;
 namespace fs = boost::filesystem;
 
-#define ctrace clog(BlockTrace)
 #define ETH_TIMED_ENACTMENTS 0
 
 static const unsigned c_maxSyncTransactions = 256;
@@ -337,6 +336,7 @@ pair<TransactionReceipts, bool> Block::sync(BlockChain const& _bc, TransactionQu
 					}
 					else
 					{
+						clog(StateTrace) << t.sha3() << "Temporarily no gas left in current block (txs gas > block's gas limit)";
 						// Temporarily no gas left in current block.
 						// OPTIMISE: could note this and then we don't evaluate until a block that does have the gas left.
 						// for now, just leave alone.
@@ -435,7 +435,7 @@ u256 Block::enact(VerifiedBlockRef const& _block, BlockChain const& _bc)
 
 	LastHashes lh;
 	DEV_TIMED_ABOVE("lastHashes", 500)
-		lh = _bc.lastHashes((unsigned)m_previousBlock.number());
+		lh = _bc.lastHashes(m_currentBlock.parentHash());
 
 	RLP rlp(_block.block);
 
@@ -524,7 +524,7 @@ u256 Block::enact(VerifiedBlockRef const& _block, BlockChain const& _bc)
 
 				BlockInfo uncleParent;
 				if (!_bc.isKnown(uncle.parentHash()))
-					BOOST_THROW_EXCEPTION(UnknownParent());
+					BOOST_THROW_EXCEPTION(UnknownParent() << errinfo_hash256(uncle.parentHash()));
 				uncleParent = BlockInfo(_bc.block(uncle.parentHash()));
 
 				// m_currentBlock.number() - uncle.number()		m_cB.n - uP.n()
@@ -879,7 +879,7 @@ string Block::vmTrace(bytesConstRef _block, BlockChain const& _bc, ImportRequire
 	m_currentBlock.verifyInternals(_block);
 	m_currentBlock.noteDirty();
 
-	LastHashes lh = _bc.lastHashes((unsigned)m_previousBlock.number());
+	LastHashes lh = _bc.lastHashes(m_currentBlock.parentHash());
 
 	string ret;
 	unsigned i = 0;

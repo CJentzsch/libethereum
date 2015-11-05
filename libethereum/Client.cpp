@@ -309,9 +309,11 @@ bool Client::isSyncing() const
 
 bool Client::isMajorSyncing() const
 {
-	// TODO: only return true if it is actually doing a proper chain sync.
 	if (auto h = m_host.lock())
-		return h->isSyncing();
+	{
+		SyncState state = h->status().state;
+		return (state != SyncState::Idle && state != SyncState::NewBlocks) || h->bq().items().first > 10;
+	}
 	return false;
 }
 
@@ -870,7 +872,11 @@ void Client::flushTransactions()
 SyncStatus Client::syncStatus() const
 {
 	auto h = m_host.lock();
-	return h ? h->status() : SyncStatus();
+	if (!h)
+		return SyncStatus();
+	SyncStatus status = h->status();
+	status.majorSyncing = isMajorSyncing();
+	return status;
 }
 
 bool Client::submitSealed(bytes const& _header)

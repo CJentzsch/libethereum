@@ -27,6 +27,7 @@
 #include "LogFilter.h"
 #include "TransactionQueue.h"
 #include "Block.h"
+#include "CommonNet.h"
 
 namespace dev
 {
@@ -89,6 +90,12 @@ public:
 
 	/// Makes the given create. Nothing is recorded into the state.
 	virtual ExecutionResult create(Address const& _secret, u256 _value, bytes const& _data, u256 _gas, u256 _gasPrice, BlockNumber _blockNumber, FudgeFactor _ff = FudgeFactor::Strict) override;
+
+	/// Estimate gas usage for call/create.
+	/// @param _maxGas An upper bound value for estimation, if not provided default value of c_maxGasEstimate will be used.
+	/// @param _callback Optional callback function for progress reporting
+	virtual std::pair<u256, ExecutionResult> estimateGas(Address const& _from, u256 _value, Address _dest, bytes const& _data, u256 _maxGas, u256 _gasPrice, BlockNumber _blockNumber, GasEstimationCallback const& _callback) override;
+
 	using Interface::create;
 
 	using Interface::balanceAt;
@@ -168,6 +175,7 @@ public:
 	virtual bool wouldMine() const override { BOOST_THROW_EXCEPTION(InterfaceNotSupported("ClientBase::wouldMine")); }
 	virtual u256 hashrate() const override { BOOST_THROW_EXCEPTION(InterfaceNotSupported("ClientBase::hashrate")); }
 	virtual WorkingProgress miningProgress() const override { BOOST_THROW_EXCEPTION(InterfaceNotSupported("ClientBase::miningProgress")); }
+	virtual SyncStatus syncStatus() const override { BOOST_THROW_EXCEPTION(InterfaceNotSupported("ClientBase::syncStatus")); }
 
 	virtual void submitExternalHashrate(u256 const& _rate, h256 const& _id) override;
 

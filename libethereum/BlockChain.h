@@ -61,7 +61,6 @@ class State;
 class Block;
 
 struct AlreadyHaveBlock: virtual Exception {};
-struct UnknownParent: virtual Exception {};
 struct FutureTime: virtual Exception {};
 struct TransientError: virtual Exception {};
 
@@ -124,10 +123,16 @@ public:
 	/// @returns the block hashes of any blocks that came into/went out of the canonical block chain.
 	std::pair<ImportResult, ImportRoute> attemptImport(bytes const& _block, OverlayDB const& _stateDB, bool _mutBeNew = true) noexcept;
 
-	/// Import block into disk-backed DB
+	/// Import block into disk-backed DB.
 	/// @returns the block hashes of any blocks that came into/went out of the canonical block chain.
 	ImportRoute import(bytes const& _block, OverlayDB const& _stateDB, bool _mustBeNew = true);
 	ImportRoute import(VerifiedBlockRef const& _block, OverlayDB const& _db, bool _mustBeNew = true);
+
+	/// Import data into disk-backed DB.
+	/// This will not execute the block and populate the state trie, but rather will simply add the
+	/// block/header and receipts directly into the databases.
+	void insert(bytes const& _block, bytesConstRef _receipts, bool _mustBeNew = true);
+	void insert(VerifiedBlockRef _block, bytesConstRef _receipts, bool _mustBeNew = true);
 
 	/// Returns true if the given block is known (though not necessarily a part of the canon chain).
 	bool isKnown(h256 const& _hash) const;
@@ -175,8 +180,8 @@ public:
 	h256 numberHash(unsigned _i) const { if (!_i) return genesisHash(); return queryExtras<BlockHash, uint64_t, ExtraBlockHash>(_i, m_blockHashes, x_blockHashes, NullBlockHash).value; }
 
 	/// Get the last N hashes for a given block. (N is determined by the LastHashes type.)
-	LastHashes lastHashes() const { return lastHashes(number()); }
-	LastHashes lastHashes(unsigned _i) const;
+	LastHashes lastHashes() const { return lastHashes(m_lastBlockHash); }
+	LastHashes lastHashes(h256 const& _mostRecentHash) const;
 
 	/** Get the block blooms for a number of blocks. Thread-safe.
 	 * @returns the object pertaining to the blocks:
@@ -365,7 +370,6 @@ protected:
 	void noteCanonChanged() const { Guard l(x_lastLastHashes); m_lastLastHashes.clear(); }
 	mutable Mutex x_lastLastHashes;
 	mutable LastHashes m_lastLastHashes;
-	mutable unsigned m_lastLastHashesNumber = (unsigned)-1;
 
 	void updateStats() const;
 	mutable Statistics m_lastStats;

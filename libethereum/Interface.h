@@ -37,6 +37,8 @@ namespace dev
 namespace eth
 {
 
+struct SyncStatus;
+
 using TransactionHashes = h256s;
 using UncleHashes = h256s;
 
@@ -51,6 +53,15 @@ enum class FudgeFactor
 	Strict,
 	Lenient
 };
+
+struct GasEstimationProgress
+{
+	u256 lowerBound;
+	u256 upperBound;
+};
+
+using GasEstimationCallback = std::function<void(GasEstimationProgress const&)>;
+extern const u256 c_maxGasEstimate;
 
 /**
  * @brief Main API hub for interfacing with Ethereum.
@@ -71,11 +82,11 @@ public:
 	virtual std::pair<h256, Address> submitTransaction(TransactionSkeleton const& _t, Secret const& _secret) = 0;
 
 	/// Submits the given message-call transaction.
-	void submitTransaction(Secret const& _secret, u256 const& _value, Address const& _dest, bytes const& _data = bytes(), u256 const& _gas = 1000000, u256 const& _gasPrice = DefaultGasPrice, u256 const& _nonce = UndefinedU256);
+	void submitTransaction(Secret const& _secret, u256 const& _value, Address const& _dest, bytes const& _data = bytes(), u256 const& _gas = 1000000, u256 const& _gasPrice = DefaultGasPrice, u256 const& _nonce = Invalid256);
 
 	/// Submits a new contract-creation transaction.
 	/// @returns the new contract's address (assuming it all goes through).
-	Address submitTransaction(Secret const& _secret, u256 const& _endowment, bytes const& _init, u256 const& _gas = 1000000, u256 const& _gasPrice = DefaultGasPrice, u256 const& _nonce = UndefinedU256);
+	Address submitTransaction(Secret const& _secret, u256 const& _endowment, bytes const& _init, u256 const& _gas = 1000000, u256 const& _gasPrice = DefaultGasPrice, u256 const& _nonce = Invalid256);
 
 	/// Blocks until all pending transactions have been processed.
 	virtual void flushTransactions() = 0;
@@ -98,6 +109,11 @@ public:
 
 	/// Injects the RLP-encoded block given by the _rlp into the block queue directly.
 	virtual ImportResult injectBlock(bytes const& _block) = 0;
+
+	/// Estimate gas usage for call/create.
+	/// @param _maxGas An upper bound value for estimation, if not provided default value of c_maxGasEstimate will be used.
+	/// @param _callback Optional callback function for progress reporting
+	virtual std::pair<u256, ExecutionResult> estimateGas(Address const& _from, u256 _value, Address _dest, bytes const& _data, u256 _maxGas, u256 _gasPrice, BlockNumber _blockNumber, GasEstimationCallback const& _callback = GasEstimationCallback()) = 0;
 
 	// [STATE-QUERY API]
 
@@ -195,6 +211,9 @@ public:
 	virtual u256 gasLimitRemaining() const = 0;
 	// Get the gas bidding price
 	virtual u256 gasBidPrice() const = 0;
+
+	/// Get some information on the block queue.
+	virtual SyncStatus syncStatus() const = 0;
 
 	// [MINING API]:
 
