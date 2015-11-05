@@ -818,41 +818,44 @@ void Block::cleanup(bool _fullCommit)
 
 		m_state.db().commit(m_currentBlock.number());	// TODO: State API for this?
 
-		try
+		if (m_currentBlock.number() > 49300)
 		{
-			if (m_currentBlock.number() % Defaults::statePruning() == 0)
-				mutableState().getState().leftOvers();
-		}
-		catch(Exception _e)
-		{
-			cwarn << "BAD TRIE in state: " << boost::diagnostic_information(_e);
-		}
-		catch(...)
-		{
-			cwarn << "BAD TRIE in state";
-		}
-
-		try
-		{
-			if (m_currentBlock.number() % Defaults::statePruning() == 0)
+			try
 			{
-				for (auto i: mutableState().getTouchedAccounts())
+				//if (m_currentBlock.number() % Defaults::statePruning() == 0)
+					mutableState().getState().leftOvers();
+			}
+			catch(Exception _e)
+			{
+				cwarn << "BAD TRIE in state: " << boost::diagnostic_information(_e);
+			}
+			catch(...)
+			{
+				cwarn << "BAD TRIE in state";
+			}
+
+			try
+			{
+				//if (m_currentBlock.number() % Defaults::statePruning() == 0)
 				{
-					if (mutableState().storageRoot(i) != EmptyTrie)
+					for (auto i: mutableState().getTouchedAccounts())
 					{
-						SecureTrieDB<h256, OverlayDB> storageDB(mutableState().getState().db(), mutableState().storageRoot(i)); // mutableState().m_state.db()
-						storageDB.leftOvers();
+						if (mutableState().storageRoot(i) != EmptyTrie)
+						{
+							SecureTrieDB<h256, OverlayDB> storageDB(mutableState().getState().db(), mutableState().storageRoot(i)); // mutableState().m_state.db()
+							storageDB.leftOvers();
+						}
 					}
 				}
 			}
-		}
-		catch(Exception _e)
-		{
-			cwarn << "BAD TRIE in storage tree: " << boost::diagnostic_information(_e);
-		}
-		catch(...)
-		{
-			cwarn << "BAD TRIE in storage tree";
+			catch(Exception _e)
+			{
+				cwarn << "BAD TRIE in storage tree: " << boost::diagnostic_information(_e);
+			}
+			catch(...)
+			{
+				cwarn << "BAD TRIE in storage tree";
+			}
 		}
 
 		if (isChannelVisible<StateTrace>()) // Avoid calling toHex if not needed
